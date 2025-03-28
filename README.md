@@ -66,10 +66,10 @@ Below, each implemented function is listed
 ### ProviderFacet:
 
 - **initialize**: Sets up the initial contract state and assigns admin roles
-- **addProvider**: Grants OWNER_ROLE to a specified account and mints $LAB tokens.
-- **removeProvider**: Removes the caller’s OWNER_ROLE if conditions are met.
+- **addProvider**: Grants PROVIDER_ROLE to a specified account and mints $LAB tokens.
+- **removeProvider**: Removes the caller’s PROVIDER_ROLE if conditions are met.
 - **updateProvider**: Updates the caller's provider information (name, email, country).
-- **isLabProvider**: Checks if a given account holds the OWNER_ROLE.
+- **isLabProvider**: Checks if a given account holds the PROVIDER_ROLE.
 - **getLabProviders**: Retrieves a list of all lab providers.
 
 ## LabFacet:
@@ -107,7 +107,7 @@ Use case Specification
 | Use case       | **INITIALIZE** |
 | Definition     | `function initialize(string memory _name, string memory _email, string memory _country, address _labERC20) public initializer` |
 | Actors         | Contract owner |
-| Purpose        | Initializes the smart contract setting, up the initial admin role and the ERC20 token external contract. |
+| Purpose        | Initializes the smart contract setting, the initial admin role and the ERC20 token external contract. |
 | Summary        | Only the contract owner can initialize the contract |
 | Preconditions  | Have a WALLET and sufficient funds. Can only be executed once. |
 | Postconditions | The contract becomes initialized |
@@ -115,18 +115,18 @@ Use case Specification
 
 |                | Description |
 |----------------|-------------|
-| Use case       | **ADD OWNER** |
+| Use case       | **ADD PROVIDER** |
 | Definition     | `function addProvider(string memory _name, address _account, string memory _email, string memory _country) external defaultAdminRole returns (bool success)` |
 | Actors         | Contract owner |
-| Purpose        | Adds a new provider by granting the OWNER_ROLE and minting tokens for the specified account. |
+| Purpose        | Adds a new provider by granting the PROVIDER_ROLE and minting tokens for the specified account. |
 | Summary        | Only the contract owner can add a new provider. |
-| Preconditions  | The account must not already have the OWNER_ROLE. |
-| Postconditions | The account receives the OWNER_ROLE and 1000 $LAB ERC20 tokens are minted for them. |
+| Preconditions  | The account must not already have the PROVIDER_ROLE. |
+| Postconditions | The account receives the PROVIDER_ROLE and 1000 $LAB ERC20 tokens are minted for them. |
 | Events         | Emits an {ProviderAdded} event if the provider is successfully added. |
 
 |                | Description |
 |----------------|-------------|
-| Use case       | **REMOVE SPECIFIC OWNER** |
+| Use case       | **REMOVE SPECIFIC PROVIDER** |
 | Definition     | `function removeProvider(address _provider) external defaultAdminRole returns (bool success)` |
 | Actors         | Contract owner |
 | Purpose        | Removes a specified provider from the provider list if they do not have any lab. |
@@ -137,8 +137,8 @@ Use case Specification
 
 |                | Description |
 |----------------|-------------|
-| Use case       | **UPDATE OWNER** |
-| Definition     | `function updateProvider(string memory _name, string memory _email, string memory _country) external onlyRole(OWNER_ROLE) returns (bool success)` |
+| Use case       | **UPDATE PROVIDER** |
+| Definition     | `function updateProvider(string memory _name, string memory _email, string memory _country) external onlyRole(PROVIDER_ROLE) returns (bool success)` |
 | Actors         | Provider |
 | Purpose        | Updates the provider information for the caller, modifying their name, email, and country details. |
 | Summary        | Only a provider can update their own information. |
