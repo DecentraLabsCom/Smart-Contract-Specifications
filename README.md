@@ -63,7 +63,7 @@ The system is divided into multiple **facets**, each handling specific responsib
 ## ⚙️ Functional Requirements
 
 Below, each implemented function is listed
-### ProviderFacet:
+## ProviderFacet:
 
 - **initialize**: Sets up the initial contract state and assigns admin roles
 - **addProvider**: Grants PROVIDER_ROLE to a specified account and mints $LAB tokens.
