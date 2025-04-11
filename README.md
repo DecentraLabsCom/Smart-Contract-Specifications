@@ -116,7 +116,7 @@ Use case Specification
 |                | Description |
 |----------------|-------------|
 | Use case       | **ADD PROVIDER** |
-| Definition     | `function addProvider(string memory _name, address _account, string memory _email, string memory _country) external defaultAdminRole returns (bool success)` |
+| Definition     | `function addProvider(string memory _name, address _account, string memory _email, string memory _country) external defaultAdminRole` |
 | Actors         | Contract owner |
 | Purpose        | Adds a new provider by granting the PROVIDER_ROLE and minting tokens for the specified account. |
 | Summary        | Only the contract owner can add a new provider. |
@@ -127,7 +127,7 @@ Use case Specification
 |                | Description |
 |----------------|-------------|
 | Use case       | **REMOVE SPECIFIC PROVIDER** |
-| Definition     | `function removeProvider(address _provider) external defaultAdminRole returns (bool success)` |
+| Definition     | `function removeProvider(address _provider) external defaultAdminRole` |
 | Actors         | Contract owner |
 | Purpose        | Removes a specified provider from the provider list if they do not have any lab. |
 | Summary        | Only the contract owner can remove a provider from the list. |
@@ -138,13 +138,13 @@ Use case Specification
 |                | Description |
 |----------------|-------------|
 | Use case       | **UPDATE PROVIDER** |
-| Definition     | `function updateProvider(string memory _name, string memory _email, string memory _country) external onlyRole(PROVIDER_ROLE) returns (bool success)` |
+| Definition     | `function updateProvider(string memory _name, string memory _email, string memory _country) external onlyRole(PROVIDER_ROLE)` |
 | Actors         | Provider |
 | Purpose        | Updates the provider information for the caller, modifying their name, email, and country details. |
 | Summary        | Only a provider can update their own information. |
 | Preconditions  | The caller must be an existing provider. |
 | Postconditions | The provider's information is updated with the new details provided. |
-| Events         | No explicit event mentioned in the function description. |
+| Events         | Emits an {ProviderUpdated} event if the provider is successfully updated. |
 
 **The functions listed below are queries that do not modify the state of the variables**:
 
