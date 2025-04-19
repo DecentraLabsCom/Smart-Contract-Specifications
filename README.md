@@ -41,13 +41,15 @@ The system is divided into multiple **facets**, each handling specific responsib
 | base.email  | string  | Email address                  |
 | base.country| string  | Country                        |
 
-### Lab (Cyber Physical System)
+### Lab (Cyber Physical System implemented as NFT)
 | Field       | Type    | Description                    |
 |-------------|---------|--------------------------------|
 | labId       | uint    | Unique ID                      |
-| provider    | address | Provider address               |
 | base.uri    | string  | Metadata URI                   |
 | base.price  | uint96  | Price in $LAB tokens           |
+| base.auth   | string  | Authentication service URI     |
+| base.accessURI   | string  | Lab services acess URI|
+| base.accessKey   | string  | Key or ID used for routing/access|
 
 ### Reservation (Booking)
 | Field       | Type     | Description                  |
@@ -74,14 +76,14 @@ Below, each implemented function is listed
 
 ## LabFacet:
 
-- **addLab**: Allows the contract provider to add a new lab with a specified URI and price.
-- **setLabURI**: Allows the contract provider to set or update the URI for a specific token ID.
-- **updateLab**: Allows the contract provider to update the URI and price of an existing lab.
+- **initialize**: Sets up the ERC721 token with the provided name and symbol. Initializes the labId to 0.
+- **addLab**: Allows the contract provider to add a new lab with the on-chain stored metadata.
+- **setTokenURI**: Allows the contract provider to set or update the URI for a specific token ID.
+- **tokenURI**: Returns the URI for a given token ID. Used for compliance with ERC721 standards.
+- **updateLab**: Allows the contract provider to update metadata stored on-chain.
 - **deleteLab**: Allows the contract provider to delete an existing lab.
-- **transferLab**: Transfers ownership of a lab to another wallet.
-- **getLab**: Retrieves the information about the lab structure corresponding to the provided lab ID.
-- **getAllLabs**: Retrieves a list with the information about all the labs.
-- **labURI**: Retrieves the URI associated with a specific lab ID.
+- **getLab**: Retrieves the information about the lab structure (on-chain metadata) corresponding to the provided lab ID.
+- **getAllLabs**: Retrieves a list with all th labs ID.
 
 ## ReservationFacet:
 
@@ -158,41 +160,51 @@ Use case Specification
 
 |                | Description |
 |----------------|-------------|
+| Use case       | **INITIALIZE** |
+| Definition     | `function initialize(string memory _name, string memory _symbol) public initializer` |
+| Actors         | Contract owner |
+| Purpose        | Sets up the ERC721 token with the provided name and symbol, and initializes the labId to 0. |
+| Summary        | Only the contract owner can initialize the contract |
+| Preconditions  | Have a WALLET and sufficient funds. Can only be executed once |
+| Postconditions | The ERC721 token associated with de labs is initializes  |
+
+|                | Description |
+|----------------|-------------|
 | Use case       | **ADD LAB** |
-| Definition     | `function addLab(string memory _uri, uint96 _price) external isLabProvider returns (bool success)` |
+| Definition     | `function addLab(string memory _uri, uint96 _price, string memory _auth, string memory _accessURI, string memory _accessKey) external isLabProvider` |
 | Actors         | Providers |
-| Purpose        | Allows the provider to add a new lab with a specified URI and price |
+| Purpose        | Allows the contract provider to add a new lab with the on-chain stored metadata |
 | Summary        | Only a provider can add a new lab |
 | Preconditions  | Caller must be the lab provider |
-| Postconditions | A new lab is registered with the given URI and price |
+| Postconditions | A new lab is registered with the given metadata |
 | Events         | Emits a {LabAdded} event if successful |
 
 |                | Description |
 |----------------|-------------|
-| Use case       | **SET LAB URI** |
-| Definition     | `function setTokenURI(uint256 _labId, string memory _labURI) external` |
+| Use case       | **SET TOKEN URI** |
+| Definition     | `function setTokenURI(uint256 _labId, string memory _tokenURI) external` |
 | Actors         | Providers |
 | Purpose        | Allows the lab provider to set or update the URI for a specific lab ID |
 | Summary        | Only the lab provider can modify the lab URI |
 | Preconditions  | Caller must be the lab provider; the lab ID must exist |
 | Postconditions | The specified lab's URI is updated |
-| Events         | Emits a {URIUpdated} event if successful |
+| Events         | Emits a {LabURISet} event if successful |
 
 |                | Description |
 |----------------|-------------|
 | Use case       | **UPDATE LAB** |
-| Definition     | `function updateLab(uint _labId, string memory _newURI, uint96 _newPrice) external returns (bool success)` |
+| Definition     | `function updateLab(string memory _uri, uint96 _price, string memory _auth, string memory _accessURI, string memory _accessKey) external onlyLabProvider(_labId)` |
 | Actors         | Provider |
-| Purpose        | Allows the lab provider to update the URI and price of an existing lab |
+| Purpose        | Allows the lab provider to update tthe on-chain stored metadata of an existing lab |
 | Summary        | Only the lab provider can modify lab details |
 | Preconditions  | Caller must be the lab provider; lab ID must exist |
-| Postconditions | The specified lab's URI and price are updated |
+| Postconditions | The specified lab's metadata are updated |
 | Events         | Emits a {LabUpdated} event if successful |
 
 |                | Description |
 |----------------|-------------|
 | Use case       | **DELETE LAB** |
-| Definition     | `function deleteLab(uint _labId) external isProvider(_labId) returns (bool success)` |
+| Definition     | `function deleteLab(uint _labId) external isProvider(_labId)` |
 | Actors         | Providers |
 | Purpose        | Allows the lab provider to delete an existing lab |
 | Summary        | Only the lab provider can remove a lab |
@@ -200,24 +212,14 @@ Use case Specification
 | Postconditions | The specified lab is removed from the system |
 | Events         | Emits a {LabDeleted} event if successful |
 
-|                | Description |
-|----------------|-------------|
-| Use case       | **TRANSFER LAB** |
-| Definition     | `function transferLab(uint _labId, address _newProvider) external isProvider(_labId) returns (bool success)` |
-| Actors         | Provider |
-| Purpose        | Allows the lab provider to transfer ownership of a lab to another wallet address |
-| Summary        | Only the lab provider can transfer a lab to another wallet address |
-| Preconditions  | Caller must be the lab provider; lab ID must exist; new provider must be valid |
-| Postconditions | Ownership of the specified lab is transferred to the new provider |
-| Events         | Emits a {LabTransferred} event if successful |
 
 **The functions listed below are queries that do not modify the state of the variables**:
 
 | Function Name | Definition | Purpose | Return Type |
 |---------------|------------|---------|-------------|
 | getLab        | `function getLab(uint _labId) public view returns (Lab memory)` | Retrieves the lab associated with the given lab ID. | Lab |
-| getAllLabs    | `function getAllLabs() public view returns (Lab[] memory)` | Retrieves the list of all labs. | Lab array |
-| labURI        | `function labURI(uint256 _labId) public view returns (string memory)` | Retrieves the URI associated with a specific lab ID. | URI string |
+| getAllLabs    | `function getAllLabs() public view returns (uint256[] memory)` | Retrieves the list of the all labs ID. | ID (uint256) array |
+| tokenURI        | `function tokenURI(uint256 _labId) public view returns (string memory)` | Retrieves the URI associated with a specific lab ID. | URI string |
 
 **ReservationFacet**:
 
