@@ -41,7 +41,7 @@ The system is divided into multiple **facets**, each handling specific responsib
 | base.email  | string  | Email address                  |
 | base.country| string  | Country                        |
 
-### Lab (Cyber Physical System implemented as NFT)
+### Lab (Cyber Physical System implemented as an NFT)
 | Field       | Type    | Description                    |
 |-------------|---------|--------------------------------|
 | labId       | uint    | Unique ID                      |
@@ -78,8 +78,8 @@ Below, each implemented function is listed
 
 - **initialize**: Sets up the ERC721 token with the provided name and symbol. Initializes the labId to 0.
 - **addLab**: Allows the contract provider to add a new lab with the on-chain stored metadata.
-- **setTokenURI**: Allows the contract provider to set or update the URI for a specific token ID.
-- **tokenURI**: Returns the URI for a given token ID. Used for compliance with ERC721 standards.
+- **setTokenURI**: Allows the contract provider to set or update the URI for a specific lab token ID.
+- **tokenURI**: Returns the URI for a given lab/token ID. Used for compliance with ERC721 standards.
 - **updateLab**: Allows the contract provider to update metadata stored on-chain.
 - **deleteLab**: Allows the contract provider to delete an existing lab.
 - **getLab**: Retrieves the information about the lab structure (on-chain metadata) corresponding to the provided lab ID.
