@@ -83,7 +83,7 @@ Below, each implemented function is listed
 - **updateLab**: Allows the contract provider to update metadata stored on-chain.
 - **deleteLab**: Allows the contract provider to delete an existing lab.
 - **getLab**: Retrieves the information about the lab structure (on-chain metadata) corresponding to the provided lab ID.
-- **getAllLabs**: Retrieves a list with all th labs ID.
+- **getAllLabs**: Retrieves a list with all the lab IDs.
 
 ## ReservationFacet:
 
