@@ -204,7 +204,7 @@ Use case Specification
 |                | Description |
 |----------------|-------------|
 | Use case       | **DELETE LAB** |
-| Definition     | `function deleteLab(uint _labId) external isProvider(_labId)` |
+| Definition     | `function deleteLab(uint _labId) external onlyLabProvider(_labId)` |
 | Actors         | Providers |
 | Purpose        | Allows the lab provider to delete an existing lab |
 | Summary        | Only the lab provider can remove a lab |
