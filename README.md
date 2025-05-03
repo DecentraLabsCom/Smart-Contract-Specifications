@@ -193,9 +193,9 @@ Use case Specification
 |                | Description |
 |----------------|-------------|
 | Use case       | **UPDATE LAB** |
-| Definition     | `function updateLab(string memory _uri, uint96 _price, string memory _auth, string memory _accessURI, string memory _accessKey) external onlyLabProvider(_labId)` |
+| Definition     | `function updateLab(uint _labId, string memory _uri, uint96 _price, string memory _auth, string memory _accessURI, string memory _accessKey) external onlyLabProvider(_labId)` |
 | Actors         | Provider |
-| Purpose        | Allows the lab provider to update tthe on-chain stored metadata of an existing lab |
+| Purpose        | Allows the lab provider to update the on-chain stored metadata of an existing lab |
 | Summary        | Only the lab provider can modify lab details |
 | Preconditions  | Caller must be the lab provider; lab ID must exist |
 | Postconditions | The specified lab's metadata are updated |
