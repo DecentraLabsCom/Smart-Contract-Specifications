@@ -158,7 +158,7 @@ The functions listed below are queries that do not modify the state of the varia
 
 #### 📢 Events
 
-The following table lists the events emitted by PrviderFacet.
+The following table lists the events emitted by ProviderFacet.
 
 | Event            | Description                                        | Parameters                                                                 |
 |------------------|----------------------------------------------------|----------------------------------------------------------------------------|
