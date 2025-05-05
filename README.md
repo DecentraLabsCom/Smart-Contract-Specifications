@@ -102,7 +102,7 @@ Below, each implemented function is listed
 Use case Specification
 **Detailed information on how each specific use case is executed is provided below**:
 
-**ProviderFacet**:
+### 💎 **ProviderFacet**:
 
 |                | Description |
 |----------------|-------------|
@@ -148,15 +148,25 @@ Use case Specification
 | Postconditions | The provider's information is updated with the new details provided. |
 | Events         | Emits an {ProviderUpdated} event if the provider is successfully updated. |
 
-**The functions listed below are queries that do not modify the state of the variables**:
+#### 🔍 View Functions
+The functions listed below are queries that do not modify the state of the variables:
 
 | Function Name | Definition | Purpose | Return Type |
 |---------------|------------|---------|-------------|
 | isLabProvider    | `function isLabProvider(address _account) external view returns (bool)` | Checks if the given account is a lab provider. | bool |
 | getLabProviders  | `function getLabProviders() external view returns (Provider[] memory)` | Retrieves the list of all lab providers. | Provider array |
 
+#### 📢 Events
 
-**LabFacet**:
+The following table lists the events emitted by PrviderFacet.
+
+| Event            | Description                                        | Parameters                                                                 |
+|------------------|----------------------------------------------------|----------------------------------------------------------------------------|
+| `ProviderAdded`   | Emitted when a new provider is added to the system. | `(address _account)` Address of the provider<br>`(string _name)` Name of the provider<br>`(string _email)` Email address<br>`(string _country)` Country |
+| `ProviderRemoved` | Emitted when a provider is removed.                | `(address _account)` Address of the provider                         |
+| `ProviderUpdated` | Emitted when a provider's information is updated.  | `(address _account)` Address of the provider<br>`(string _name)` Name of the provider<br>`(string _email)` Email address<br>`(string _country)` Country |
+
+### 💎 **LabFacet**:
 
 |                | Description |
 |----------------|-------------|
@@ -212,8 +222,8 @@ Use case Specification
 | Postconditions | The specified lab is removed from the system |
 | Events         | Emits a {LabDeleted} event if successful |
 
-
-**The functions listed below are queries that do not modify the state of the variables**:
+#### 🔍 View Functions
+The functions listed below are queries that do not modify the state of the variables:
 
 | Function Name | Definition | Purpose | Return Type |
 |---------------|------------|---------|-------------|
@@ -221,7 +231,17 @@ Use case Specification
 | getAllLabs    | `function getAllLabs() public view returns (uint256[] memory)` | Retrieves the list of the all labs ID. | ID (uint256) array |
 | tokenURI        | `function tokenURI(uint256 _labId) public view returns (string memory)` | Retrieves the URI associated with a specific lab ID. | URI string |
 
-**ReservationFacet**:
+#### 📢 Events
+The following table lists the events emitted by the LabFacet.
+
+| Event         | Description                                       | Parameters                                                                                                                                  |
+|---------------|---------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| `LabAdded`     | Emitted when a new lab is added to the system.     | `(uint256 _labId)` Lab identifier<br>`(address _provider)` Provider address<br>`(string _uri)` Metadata URI<br>`(uint96 _price)` Lab price<br>`(string _auth)` Authorization details<br>`(string _accessURI)` Access URI<br>`(string _accessKey)` Access key |
+| `LabUpdated`   | Emitted when a lab is updated.                    | `(uint256 _labId)` Lab identifier<br>`(string _uri)` Updated URI<br>`(uint96 _price)` Updated price<br>`(string _auth)` Updated auth<br>`(string _accessURI)` Updated access URI<br>`(string _accessKey)` Updated access key |
+| `LabDeleted`   | Emitted when a lab is deleted.                    | `(uint256 _labId)` Lab identifier                                                                                                           |
+| `LabURISet`    | Emitted when the URI of a lab is set.             | `(uint256 _labId)` Lab identifier<br>`(string _uri)` URI of the lab                                                                         |
+
+### 💎 **ReservationFacet**:
 
 |                | Description |
 |----------------|-------------|
@@ -289,7 +309,8 @@ Use case Specification
 | Postconditions | A refund request is initiated and processed |
 | Events         | Emits a {FundsRequested} event if successful |
 
-**The functions listed below are queries that do not modify the state of the variables**:
+#### 🔍 View Functions
+The functions listed below are queries that do not modify the state of the variables:
 
 | Function Name   | Definition                                                                 | Purpose                                                   | Return Type   |
 |-----------------|----------------------------------------------------------------------------|-----------------------------------------------------------|---------------|
