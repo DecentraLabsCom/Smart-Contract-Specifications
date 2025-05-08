@@ -1,5 +1,5 @@
 # Smart-Contract-Specifications
-This repository details the specification of a **lab** booking, access and sharing decentralized solution using Solidity smart contracts that includes role-based access control using OpenZeppelin libraries. 
+This repository details the specification of a **lab** booking, access and sharing decentralized solution using Solidity smart contracts that includes role-based access control using OpenZeppelin libraries.
 
 ---
 
@@ -11,7 +11,7 @@ The proposed architecture leverages a **diamond proxy (EIP-2535)**, behind which
 
 Once the diamond proxy is deployed, the account responsible for the deployment gains the ability to add other accounts, referred to as **“providers”**. Providers are empowered to list or register online laboratories, which can later be modified, deleted, or transferred to a different provider.
 
-Users, on the other hand, are able to reserve laboratories listed by the providers, as well as cancel any of their existing reservations. Additionally, users can access laboratories they have previously reserved, as long as the reservation remains valid.
+Users, on the other hand, are able to reserve laboratories listed by the providers, as well as cancel any of their existing reservations. Additionally, users can access laboratories they have previously reserved, as long as the reservation remains valid. This functionality is achieved through the implementation of a new proposal: **reservable token**, which allows for the reservation of the use of an ERC721 token over a time interval, improving upon existing standards.
 
 The implementation of a dedicated payable token, **$LAB**, through **ERC-20**, is not covered within the scope of this document. This token will be deployed separately from the diamond proxy.
 
@@ -51,14 +51,17 @@ The system is divided into multiple **facets**, each handling specific responsib
 | base.accessURI   | string  | Lab services acess URI|
 | base.accessKey   | string  | Key or ID used for routing/access|
 
-### Reservation (Booking)
+### Reservation (Booking presented as a new reservable token)
 | Field       | Type     | Description                  |
 |-------------|----------|------------------------------|
+| reservationKey | bytes32 | Unique key associated with the reservation |
 | labId       | uint     | Associated lab ID            |
 | renter      | address  | Renter address               |
 | price       | uint96   | Rental price                 |
 | start       | uint32   | Start time (Unix)            |
 | end         | uint32   | End time (Unix)              |
+| status      | status   | State of the reservation: 0 = PENDING, 1 = BOOKED, 2 = USED, 3 = COLLECTED, 4 = CANCELLED |
+
 
 ---
 
@@ -87,16 +90,24 @@ Below, each implemented function is listed
 
 ## ReservationFacet:
 
-- **requestBook**: Allows a user to request a booking for a lab.
-- **cancelBookRequest**: Allows a user to cancel a previously requested booking.
-- **bookConfirmed**: Confirms a booking request and marks it as approved.
-- **bookDenied**: Denies a booking request and removes it from the system.
-- **cancelBookLab**: Allows a user or the lab provider to cancel an existing confirmed booking.
-- **requestFunds**: Allows a user to request a refund for a canceled, invalid or used booking.
-- **getBookings**: Retrieves all bookings related to a specific lab ID.
-- **getAllBookings**: Retrieves all booking records stored in the contract.
-- **getBooking**: Retrieves booking details for a specific lab ID and start date.
-- **getLabBalance**: Retrieves the lab's $LAB token balance of a specific account.
+- **reservationRequest**: Allows a user to request a booking for a lab.
+- **confimReservationRequest**: The lab provider or authorized account confirms a pending reservation request for a lab.
+- **denyReservationRequest**: Denies a pending reservation request and refunds the payment if necessary.
+- **cancelBookRequest**: Allows a user to cancel a previously requested reservation and refunds the payment if necessary.
+- **cancelBooking**: Allows a user or the lab provider to cancel an existing confirmed booking.
+- **requestFunds**: Allows lab providers to claim funds from used or expired reservations.
+- **userOfReservation**: Retrieves the address of the renter associated with a specific reservation key.
+- **totalReservations**: Returns the total number of existing reservations.
+- **reservationKeyByIndex**: Retrieves a reservation key at a specified index from the stored reservation keys.
+- **reservationsOf**: Get the number of reservations for a specific user.
+- **reservationKeyOfUserByIndex**: Retrieves the reservation key at a specific index for a given user.
+- **getReservationsOfToken**: Gets the total number of reservations for a specific token (lab as ERC721 token).
+- **getReservationOfTokenByIndex**: Retrieves a specific reservation key for a token(lab) by its index.
+- **hasActiveBooking**: Checks if a user has an active booking for a specific lab.
+- **getAllReservations**: Retrieves all reservation records stored in the contract.
+- **getReservation**: Retrieves the details of a reservation using a reservation key.
+- **checkAvailable**: Checks if a specific time range is available for a given lab ID.
+- **getLabTokenAddress**: Returns the address of the $LAB token contract.
 - **getSafeBalance**: Retrieves the total balance of $LAB funds held in the contract.
 
 Use case Specification
@@ -229,7 +240,7 @@ The functions listed below are queries that do not modify the state of the varia
 |---------------|------------|---------|-------------|
 | getLab        | `function getLab(uint _labId) public view returns (Lab memory)` | Retrieves the lab associated with the given lab ID. | Lab |
 | getAllLabs    | `function getAllLabs() public view returns (uint256[] memory)` | Retrieves the list of the all labs ID. | ID (uint256) array |
-| tokenURI        | `function tokenURI(uint256 _labId) public view returns (string memory)` | Retrieves the URI associated with a specific lab ID. | URI string |
+| tokenURI      | `function tokenURI(uint256 _labId) public view returns (string memory)` | Retrieves the URI associated with a specific lab ID. | URI string |
 
 #### 📢 Events
 The following table lists the events emitted by the LabFacet.
@@ -245,80 +256,101 @@ The following table lists the events emitted by the LabFacet.
 
 |                | Description |
 |----------------|-------------|
-| Use case       | **REQUEST BOOK** |
-| Definition     | `function requestBook(uint256 _labId, uint32 _start, uint32 _end) external returns (bool success)` |
-| Actors         | User |
-| Purpose        | Allows a user to request a booking for a lab |
-| Summary        | Users can request a booking for a listed lab |
-| Preconditions  | The lab must be available and user must have enough funds |
-| Postconditions | A booking request is created and stored |
-| Events         | Emits a {BookRequested} event if successful |
+| Use case       | **RESERVATION REQUEST** |
+| Definition     | `function reservationRequest(uint256 _labId, uint32 _start, uint32 _end) external exists(_labId) override` |
+| Actors         | Users |
+| Purpose        | Initiates a new reservation request |
+| Summary        | Creates a reservation request with specified details |
+| Preconditions  | The lab must exists |
+| Postconditions | Reservation state is updated to PENDING |
+| Events         | {ReservationRequested} |
 
 |                | Description |
 |----------------|-------------|
-| Use case       | **CANCEL BOOK REQUEST** |
-| Definition     | `function cancelBookRequest(uint256 _bookRequestId) public returns (bool success)` |
-| Actors         | User |
-| Purpose        | Allows a user to cancel a previously requested booking |
-| Summary        | Users can cancel their pending booking requests |
-| Preconditions  | Caller must be the requester of the booking; The booking request must exist |
-| Postconditions | The booking request is removed from the system |
-| Events         | Emits a {BookRequestCancelled} event if successful |
+| Use case       | **CONFIM RESERVATION REQUEST** |
+| Definition     | `function confimReservationRequest(bytes32 _reservationKey) external defaultAdminRole reservationPending(_reservationKey) override` |
+| Actors         | Providers or authorized account |
+| Purpose        | Confirm and book the reservation |
+| Summary        | Creates a reservation request with specified details |
+| Preconditions  | Caller must be the lab provider (for now, the DEFAULT_ADMIN_ROLE) |
+| Postconditions | State is updated to BOOKED |
+| Events         | Emits a {ReservationConfirmed} event if successful |
 
 |                | Description |
 |----------------|-------------|
-| Use case       | **BOOK CONFIRMED** |
-| Definition     | `function bookConfirmed(uint256 _bookRequestId) public returns (bool success)` |
-| Actors         | Providers |
-| Purpose        | Confirms a booking request and marks it as approved |
-| Summary        | The lab provider can approve a valid booking request |
-| Preconditions  | Caller must be the lab provider; The booking request must exist and be valid |
-| Postconditions | The booking request is confirmed and marked as approved |
-| Events         | Emits a {BookConfirmed} event if successful |
+| Use case       | **DENY RESERVATION REQUEST** |
+| Definition     | `function denyReservationRequest(bytes32 _reservationKey) external defaultAdminRole reservationPending(_reservationKey) override` |
+| Actors         | Providers or authorized account |
+| Purpose        | Denies a pending reservation request |
+| Summary        | Reservation request is marked as denied |
+| Preconditions  | Caller must be the lab provider (for now, the DEFAULT_ADMIN_ROLE) |
+| Postconditions | State is updated to CANCELLED |
+| Events         | Emits a {ReservationRequestDenied} event if successful |
 
 |                | Description |
 |----------------|-------------|
-| Use case       | **BOOK DENIED** |
-| Definition     | `function bookDenied(uint256 _bookRequestId) public returns (bool success)` |
-| Actors         | Providers |
-| Purpose        | Denies a booking request and removes it from the system |
-| Summary        | The lab provider can reject a booking request |
-| Preconditions  | Caller must be the lab provider; The booking request must exist |
-| Postconditions | The booking request is denied and removed from the system |
-| Events         | Emits a {BookDenied} event if successful |
+| Use case       | **CANCEL RESERVATION REQUEST** |
+| Definition     | `function cancelReservationRequest(bytes32 _reservationKey) external override` |
+| Actors         | Users |
+| Purpose        | Allows cancellation of an existing reservation |
+| Summary        | Cancels an active reservation |
+| Preconditions  | Caller must be the renter |
+| Postconditions | State is updated to CANCELLED |
+| Events         | Emits a {ReservationRequestCanceled} event if successful |
 
 |                | Description |
 |----------------|-------------|
-| Use case       | **CANCEL BOOK LAB** |
-| Definition     | `function cancelBookLab(uint256 _bookId) public returns (bool success)` |
+| Use case       | **CANCEL BOOKING** |
+| Definition     | `function cancelBooking(bytes32 _reservationKey) external override` |
 | Actors         | Users, providers |
-| Purpose        | Allows a user or the lab provider to cancel an existing confirmed booking |
-| Summary        | Users or the lab provider can cancel a confirmed booking |
-| Preconditions  | Caller must be the owner of the booking or the lab provider; The booking must exist |
-| Postconditions | The booking is canceled and removed from the system. The funds are returned. |
-| Events         | Emits a {BookCancelled} event if successful |
+| Purpose        | Allows cancellation of an existing  booking |
+| Summary        | Cancels an active booking |
+| Preconditions  | Caller must be the renter or the lab provider |
+| Postconditions | State is updated to CANCELLED |
+| Events         | Emits a {BookingCanceled} event if successful |
 
 |                | Description |
 |----------------|-------------|
 | Use case       | **REQUEST FUNDS** |
-| Definition     | `function requestFunds(uint256 _bookId) public returns (bool success)` |
+| Definition     | `function requestFunds() external isLabProvider` |
 | Actors         | Providers |
-| Purpose        | Allows a lab provider to reclaim funds from consumed or expired bookings |
-| Summary        | Providers can request the funds when a booking is outdated |
-| Preconditions  | Caller must be the provider of the lab with bookings pending to retrieve |
-| Postconditions | A refund request is initiated and processed |
-| Events         | Emits a {FundsRequested} event if successful |
+| Purpose        | Allows lab providers to claim funds from used or expired reservations |
+| Summary        | Creates a reservation request with specified details |
+| Preconditions  | Caller must be a registered lab provider |
+| Postconditions | Transfers the total amount of $LAB tokens from all eligible reservations to the provider |
+| Events         | None |
+
 
 #### 🔍 View Functions
 The functions listed below are queries that do not modify the state of the variables:
 
 | Function Name   | Definition                                                                 | Purpose                                                   | Return Type   |
 |-----------------|----------------------------------------------------------------------------|-----------------------------------------------------------|---------------|
-| getBookings     | `function getBookings(uint labId) external view returns (Rental[] memory)` | Retrieves all bookings related to a specific lab ID       | Reservation array  |
-| getAllBookings  | `function getAllBookings() public view returns (Rental[] memory)`          | Retrieves all booking records stored in the contract      | Reservation array  |
-| getBooking      | `function getBooking(uint _labId, uint32 _startDate) public view returns (Rental memory)` | Retrieves booking details for a specific lab ID and start date | Reservation        |
-| getLabBalance   | `function getLabBalance(address account) public view returns (uint256)`    | Retrieves the lab token balance of a specific account     | uint256       |
-| getSafeBalance  | `function getSafeBalance() public view returns (uint256)`                  | Retrieves the total balance of funds held in the contract | uint256       |
+| userOfReservation | `function userOfReservation(bytes32 _reservationKey) external view returns (address)` | Retrieves the address of the renter associated with a specific reservation key. | address |
+| totalReservations | `function totalReservations() external view returns (uint256)` | Returns the total number of existing reservations | uint256 |
+| reservationKeyByIndex | `function reservationKeyByIndex(uint256 _index) external view returns (bytes32)` | Retrieves a reservation key at a specified index from the stored reservation keys | bytes32 |
+| reservationsOf  | `function reservationsOf(address _user) external view returns (uint256)` | Get the number of reservations for a specific user | uint256 |
+| reservationKeyOfUserByIndex | `function reservationKeyOfUserByIndex(address _user, uint256 _index) external view returns (bytes32)` | Retrieves the reservation key at a specific index for a given user | bytes32 |
+| getReservationsOfToken | `function getReservationsOfToken(uint256 _tokenId) public view virtual exists(_tokenId) returns (uint)` | Gets the total number of reservations for a specific lab (token)  | uint |
+| getReservationOfTokenByIndex | `function getReservationOfTokenByIndex(uint256 _tokenId, uint256 _index) external view exists(_tokenId) returns (bytes32)` | Retrieves a specific reservation key for a token (lab) by its index | bytes32 |
+| hasActiveBooking | `function hasActiveBooking(uint256 _tokenId, address _user) external view virtual exists(_tokenId) returns (bool)` | Checks if a user has an active booking for a specific lab | bool |
+| getAllReservations | `function getAllReservations() external view returns (Reservation[] memory)` | Retrieves all reservations stored in the contract | Reservation[] memory |
+| getReservation  | `function getReservation(bytes32 _reservationKey) external view returns (Reservation memory)` | Retrieves the details of a reservation using a reservation key. | Reservation memory |
+contract | address |
+| checkAvailable  | `function checkAvailable(uint256 _tokenId, uint256 _start, uint256 _end) public view` | Checks if a specific time range is available for a given token (lab) ID. | bool |
+| getLabTokenAddress | `function getLabTokenAddress() external view returns (address)` | Returns the address of the $LAB ERC20 token 
+| getSafeBalance  | `function getSafeBalance() public view returns (uint256)` | Returns the current balance of Lab tokens held by this contract | uint256 |
+
+#### 📢 Events
+The following table lists the events emitted by the ProviderFacet.
+
+| Event         | Description                                       | Parameters |
+|---------------|---------------------------------------------------|-------------|
+| `ReservationRequested` | Emitted when a user submits a new reservation request. | `(address) renter`<br>`(uint256) tokenId`<br>`(uint256) start`<br>`(uint256) end`<br>`(bytes32) reservationKey` |
+| `ReservationConfirmed` | Emitted when a reservation request is confirmed. | `(bytes32) reservationKey` |
+| `ReservationRequestDenied` | Emitted when a reservation request is denied. | `(bytes32) reservationKey` |
+| `ReservationRequestCanceled` | Emitted when a reservation request is canceled by the user. | `(bytes32) reservationKey` |
+| `BookingCanceled` | Emitted when a confirmed booking is canceled. | `(bytes32) reservationKey` |
 
 ## 💳 Token Integration
 
