@@ -112,7 +112,7 @@ This encourages composability with marketplaces, decentralized identity, and acc
 ## 🛠️ Reference Implementation
 
 A full implementation is available at:
-[GitHub Link TBD – based on ReservableToken.sol]
+[DecentraLabsCom/Smart-Contracts](https://github.com/DecentraLabsCom/Smart-Contracts/tree/main/contracts/abstracts)
 
 ## ⚖️ Copyright
 
