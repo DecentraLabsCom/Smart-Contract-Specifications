@@ -26,7 +26,7 @@ The system is divided into multiple **facets**, each handling specific responsib
 ## 👤 Roles & Actors
 
 - **Contract Owner** – Holds `DEFAULT_ADMIN_ROLE`. Can add/remove lab providers.
-- **Provider** – Holds `PROVIDER_ROLE`. Can register, update, delete, and transfer labs.
+- **Provider** – Holds `PROVIDER_ROLE`. Can register, update, delete, transfer and list labs for make them reservable.
 - **User** – Can book, cancel, or request refunds for lab reservations.
 
 ---
@@ -67,7 +67,7 @@ The system is divided into multiple **facets**, each handling specific responsib
 
 ## ⚙️ Functional Requirements
 
-Below, each implemented function is listed
+Below, each implemented function is listed.
 ## ProviderFacet:
 
 - **initialize**: Sets up the initial contract state and assigns admin roles
@@ -77,6 +77,7 @@ Below, each implemented function is listed
 - **isLabProvider**: Checks if a given account holds the PROVIDER_ROLE.
 - **getLabProviders**: Retrieves a list of all lab providers.
 
+Since ProviderFacet extends OpenZeppelin’s [OpenZeppelin’s](https://github.com/OpenZeppelin) [AccessControlUpgradeable.sol](https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable/blob/master/contracts/access/AccessControlUpgradeable.sol) contract, it inherits all role-based access control functionalities provided by the OpenZeppelin library.
 ## LabFacet:
 
 - **initialize**: Sets up the ERC721 token with the provided name and symbol. Initializes the labId to 0.
@@ -88,6 +89,8 @@ Below, each implemented function is listed
 - **getLab**: Retrieves the information about the lab structure (on-chain metadata) corresponding to the provided lab ID.
 - **getAllLabs**: Retrieves a list with all the lab IDs.
 
+Since LabFacet extends OpenZeppelin’s [OpenZeppelin’s](https://github.com/OpenZeppelin) [ERC721EnumerableUpgradeable.sol](https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable/blob/master/contracts/token/ERC721/extensions/ERC721EnumerableUpgradeable.sol) contract, it inherits all the standard ERC-721 enumerable functionalities, including token enumeration and indexing capabilities.
+
 ## ReservationFacet:
 
 - **reservationRequest**: Allows a user to request a booking for a lab.
@@ -96,19 +99,11 @@ Below, each implemented function is listed
 - **cancelBookRequest**: Allows a user to cancel a previously requested reservation and refunds the payment if necessary.
 - **cancelBooking**: Allows a user or the lab provider to cancel an existing confirmed booking.
 - **requestFunds**: Allows lab providers to claim funds from used or expired reservations.
-- **userOfReservation**: Retrieves the address of the renter associated with a specific reservation key.
-- **totalReservations**: Returns the total number of existing reservations.
-- **reservationKeyByIndex**: Retrieves a reservation key at a specified index from the stored reservation keys.
-- **reservationsOf**: Get the number of reservations for a specific user.
-- **reservationKeyOfUserByIndex**: Retrieves the reservation key at a specific index for a given user.
-- **getReservationsOfToken**: Gets the total number of reservations for a specific token (lab as ERC721 token).
-- **getReservationOfTokenByIndex**: Retrieves a specific reservation key for a token(lab) by its index.
-- **hasActiveBooking**: Checks if a user has an active booking for a specific lab.
 - **getAllReservations**: Retrieves all reservation records stored in the contract.
-- **getReservation**: Retrieves the details of a reservation using a reservation key.
-- **checkAvailable**: Checks if a specific time range is available for a given lab ID.
-- **getLabTokenAddress**: Returns the address of the $LAB token contract.
+- **getLabTokenAddress**: Returns the address of the $LAB token contract, set at ProviderFacet initialization.
 - **getSafeBalance**: Retrieves the total balance of $LAB funds held in the contract.
+
+Since ReservationFacet implements the enumerable extension of the newly proposed Reservable Token, as defined in [ReservableTokenEnumerable.sol](erc-reservable-token.md), it also inherits all its functions.
 
 Use case Specification
 **Detailed information on how each specific use case is executed is provided below**:
@@ -326,18 +321,7 @@ The functions listed below are queries that do not modify the state of the varia
 
 | Function Name   | Definition                                                                 | Purpose                                                   | Return Type   |
 |-----------------|----------------------------------------------------------------------------|-----------------------------------------------------------|---------------|
-| userOfReservation | `function userOfReservation(bytes32 _reservationKey) external view returns (address)` | Retrieves the address of the renter associated with a specific reservation key. | address |
-| totalReservations | `function totalReservations() external view returns (uint256)` | Returns the total number of existing reservations | uint256 |
-| reservationKeyByIndex | `function reservationKeyByIndex(uint256 _index) external view returns (bytes32)` | Retrieves a reservation key at a specified index from the stored reservation keys | bytes32 |
-| reservationsOf  | `function reservationsOf(address _user) external view returns (uint256)` | Get the number of reservations for a specific user | uint256 |
-| reservationKeyOfUserByIndex | `function reservationKeyOfUserByIndex(address _user, uint256 _index) external view returns (bytes32)` | Retrieves the reservation key at a specific index for a given user | bytes32 |
-| getReservationsOfToken | `function getReservationsOfToken(uint256 _tokenId) public view virtual exists(_tokenId) returns (uint)` | Gets the total number of reservations for a specific lab (token)  | uint |
-| getReservationOfTokenByIndex | `function getReservationOfTokenByIndex(uint256 _tokenId, uint256 _index) external view exists(_tokenId) returns (bytes32)` | Retrieves a specific reservation key for a token (lab) by its index | bytes32 |
-| hasActiveBooking | `function hasActiveBooking(uint256 _tokenId, address _user) external view virtual exists(_tokenId) returns (bool)` | Checks if a user has an active booking for a specific lab | bool |
 | getAllReservations | `function getAllReservations() external view returns (Reservation[] memory)` | Retrieves all reservations stored in the contract | Reservation[] memory |
-| getReservation  | `function getReservation(bytes32 _reservationKey) external view returns (Reservation memory)` | Retrieves the details of a reservation using a reservation key. | Reservation memory |
-contract | address |
-| checkAvailable  | `function checkAvailable(uint256 _tokenId, uint256 _start, uint256 _end) public view` | Checks if a specific time range is available for a given token (lab) ID. | bool |
 | getLabTokenAddress | `function getLabTokenAddress() external view returns (address)` | Returns the address of the $LAB ERC20 token 
 | getSafeBalance  | `function getSafeBalance() public view returns (uint256)` | Returns the current balance of Lab tokens held by this contract | uint256 |
 
