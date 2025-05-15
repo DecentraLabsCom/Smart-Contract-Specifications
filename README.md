@@ -26,7 +26,7 @@ The system is divided into multiple **facets**, each handling specific responsib
 ## 👤 Roles & Actors
 
 - **Contract Owner** – Holds `DEFAULT_ADMIN_ROLE`. Can add/remove lab providers.
-- **Provider** – Holds `PROVIDER_ROLE`. Can register, update, delete, transfer and list labs for make them reservable.
+- **Provider** – Holds `PROVIDER_ROLE`. Can register, update, delete, transfer and list labs to make them reservable.
 - **User** – Can book, cancel, or request refunds for lab reservations.
 
 ---
