@@ -81,11 +81,11 @@ Since ProviderFacet extends OpenZeppelin’s [OpenZeppelin’s](https://github.c
 ## LabFacet:
 
 - **initialize**: Sets up the ERC721 token with the provided name and symbol. Initializes the labId to 0.
-- **addLab**: Allows the contract provider to add a new lab with the on-chain stored metadata.
-- **setTokenURI**: Allows the contract provider to set or update the URI for the file containing the off-chain metadata of a specific lab token ID.
+- **addLab**: Allows the lab provider to create and register a new lab with metadata securely stored on-chain.
+- **setTokenURI**: Allows the lab provider to set or update the URI for the file containing the off-chain metadata of a specific lab token ID.
 - **tokenURI**: Returns the URI for the off-chain metadata of a given lab/token ID. Used for compliance with ERC721 standards.
-- **updateLab**: Allows the contract provider to update metadata stored on-chain, including the token URI, which links to the metadata stored off-chain.
-- **deleteLab**: Allows the contract provider to delete an existing lab.
+- **updateLab**: Allows the lab provider to update metadata stored on-chain, including the token URI, which links to the metadata stored off-chain.
+- **deleteLab**: Allows the lab provider to delete an existing lab.
 - **getLab**: Retrieves the information about the lab structure (on-chain metadata) corresponding to the provided lab ID.
 - **getAllLabs**: Retrieves a list with all the lab IDs.
 
