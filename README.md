@@ -13,7 +13,7 @@ Once the diamond proxy is deployed, the account responsible for the deployment g
 
 Users, on the other hand, are able to reserve laboratories listed by the providers, as well as cancel any of their existing reservations. Additionally, users can access laboratories they have previously reserved, as long as the reservation remains valid. This functionality is achieved through the implementation of a new proposal: **reservable token**, which allows for the reservation of the use of an ERC721 token over a time interval, improving upon existing standards.
 
-The implementation of a dedicated payable token, **$LAB**, through **ERC-20**, is not covered within the scope of this document. This token will be deployed separately from the diamond proxy.
+The implementation of a dedicated payable token, **$LAB**, through **ERC-20**, is not covered within the scope of this document. This token is deployed separately from the diamond proxy and a basic specificacion can be found here [LabERC20.sol](LabERC20_README.md).
 
 The system is divided into multiple **facets**, each handling specific responsibilities:
 
