@@ -22,7 +22,7 @@ Use cases for NFTs increasingly include real-world and digital assets requiring 
 ### Interfaces
 
 ```solidity
-iinterface IReservableToken {
+interface IReservableToken {
     /// @notice Lists a token, making it available for reservation
     /// @param _tokenId The ID of the token to list
     function listToken(uint256 _tokenId) external;
