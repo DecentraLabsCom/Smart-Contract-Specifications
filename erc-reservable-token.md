@@ -43,7 +43,7 @@ interface IReservableToken {
 
     /// @notice Confirms a pending reservation request
     /// @param _reservationKey The unique key identifying the reservation
-    function confimReservationRequest(bytes32 _reservationKey) external;
+    function confirmReservationRequest(bytes32 _reservationKey) external;
 
     /// @notice Denies a pending reservation request
     /// @param _reservationKey The unique key identifying the reservation
