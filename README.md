@@ -104,7 +104,7 @@ Since LabFacet extends OpenZeppelin’s [OpenZeppelin’s](https://github.com/Op
 ## ReservationFacet:
 
 * **reservationRequest**: Allows a user to request a booking for a lab.
-* **confimReservationRequest**: The lab provider or authorized account confirms a pending reservation request for a lab.
+* **confirmReservationRequest**: The lab provider or authorized account confirms a pending reservation request for a lab.
 * **denyReservationRequest**: Denies a pending reservation request and refunds the payment if necessary.
 * **cancelBookRequest**: Allows a user to cancel a previously requested reservation and refunds the payment if necessary.
 * **cancelBooking**: Allows a user or the lab provider to cancel an existing confirmed booking.
