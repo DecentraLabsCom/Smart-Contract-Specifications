@@ -238,6 +238,16 @@ event ReservationRequestCanceled(bytes32 reservationKey);
 /// @notice Emitted when a booking associated with a specific reservation key is canceled.
 /// @param reservationKey The unique identifier for the reservation that was canceled.
 event BookingCanceled(bytes32 reservationKey);
+
+/// @notice Emitted when a token is listed for reservations.
+/// @param tokenId The ID of the token that was listed.
+/// @param owner The address of the token owner who listed it.
+event LabListed(uint256 indexed tokenId, address indexed owner);
+
+/// @notice Emitted when a token is unlisted from reservations.
+/// @param tokenId The ID of the token that was unlisted.
+/// @param owner The address of the token owner who unlisted it.
+event LabUnlisted(uint256 indexed tokenId, address indexed owner);
 ```
 
 > ℹ️ These events are crucial for tracking reservation status transitions in decentralized booking systems, especially in UIs and indexing layers like The Graph.
