@@ -2,7 +2,7 @@
 description: A description of the smart contracts that rule the DecentraLabs ecosystem
 ---
 
-# Smart Contract Specifications
+# Smart Contract Specification
 
 This repository details the specification of a **lab** booking, access and sharing decentralized solution using Solidity smart contracts that includes role-based access control using OpenZeppelin libraries.
 
@@ -341,13 +341,13 @@ The functions listed below are queries that do not modify the state of the varia
 
 The following table lists the events emitted by the ProviderFacet.
 
-| Event                        | Description                                                 | Parameters                                                                                                                                                                    |
-| ---------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ReservationRequested`       | Emitted when a user submits a new reservation request.      | <p><code>(address) renter</code><br><code>(uint256) tokenId</code><br><code>(uint256) start</code><br><code>(uint256) end</code><br><code>(bytes32) reservationKey</code></p> |
-| `ReservationConfirmed`       | Emitted when a reservation request is confirmed.            | `(bytes32) reservationKey`                                                                                                                                                    |
-| `ReservationRequestDenied`   | Emitted when a reservation request is denied.               | `(bytes32) reservationKey`                                                                                                                                                    |
-| `ReservationRequestCanceled` | Emitted when a reservation request is canceled by the user. | `(bytes32) reservationKey`                                                                                                                                                    |
-| `BookingCanceled`            | Emitted when a confirmed booking is canceled.               | `(bytes32) reservationKey`                                                                                                                                                    |
+| Event                        | Description                                                 | Parameters                                                                                                                                                                        |
+| ---------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ReservationRequested`       | Emitted when a user submits a new reservation request.      | <p><code>(address) renter</code><br><br><code>(uint256) tokenId</code><br><code>(uint256) start</code><br><code>(uint256) end</code><br><code>(bytes32) reservationKey</code></p> |
+| `ReservationConfirmed`       | Emitted when a reservation request is confirmed.            | <p><code>(bytes32) reservationKey</code></p><p><code>(uint256) tokenId</code> </p>                                                                                                |
+| `ReservationRequestDenied`   | Emitted when a reservation request is denied.               | <p><code>(bytes32) reservationKey</code></p><p><code>(uint256) tokenId</code></p>                                                                                                 |
+| `ReservationRequestCanceled` | Emitted when a reservation request is canceled by the user. | <p><code>(bytes32) reservationKey</code></p><p><code>(uint256) tokenId</code></p>                                                                                                 |
+| `BookingCanceled`            | Emitted when a confirmed booking is canceled.               | <p><code>(bytes32) reservationKey</code></p><p><code>(uint256) tokenId</code></p>                                                                                                 |
 
 ## 💳 Token Integration
 
