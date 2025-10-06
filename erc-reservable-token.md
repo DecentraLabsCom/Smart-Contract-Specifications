@@ -1,4 +1,3 @@
-
 # 🌐 ERC-XXXX: Reservable Token Standard
 
 > 📝 Draft proposal for a new ERC extension to ERC-721 enabling time-based reservation of non-fungible tokens. ⚠️ Not finished ⚠️ .
@@ -95,31 +94,30 @@ interface IReservableToken {
 ## 🤔 Rationale
 
 The interface provides essential functionality to:
-- ✅ List/unlist tokens as reservable
-- 📆 Request, confirm, and cancel reservations
-- 🗓️ View reservation calendars per token
-- ⛔ Avoid overlapping intervals using a time-interval library (e.g., AVL tree)
+
+* ✅ List/unlist tokens as reservable
+* 📆 Request, confirm, and cancel reservations
+* 🗓️ View reservation calendars per token
+* ⛔ Avoid overlapping intervals using a time-interval library (e.g., AVL tree)
 
 This encourages composability with marketplaces, decentralized identity, and access management.
 
 ## 🔐 Security Considerations
 
-- ⛓️ Prevent time-slot collisions using interval trees
-- 🔐 Require authentication for token owner and reservation initiator
-- ⚖️ Handle overlapping and concurrent reservations gracefully
-- 📡 Emit events to support transparent off-chain indexing
+* ⛓️ Prevent time-slot collisions using interval trees
+* 🔐 Require authentication for token owner and reservation initiator
+* ⚖️ Handle overlapping and concurrent reservations gracefully
+* 📡 Emit events to support transparent off-chain indexing
 
 ## 🛠️ Reference Implementation
 
-A full implementation is available at:
-[DecentraLabsCom/Smart-Contracts](https://github.com/DecentraLabsCom/Smart-Contracts/tree/main/contracts/abstracts)
+A full implementation is available at: [DecentraLabsCom/Smart-Contracts](https://github.com/DecentraLabsCom/Smart-Contracts/tree/main/contracts/abstracts)
 
 ## ⚖️ Copyright
 
-Copyright and license under [GNU GPLv2 or later]
+Copyright and license under \[GNU GPLv2 or later]
 
-
----
+***
 
 ## 🔄 Extension: ReservableTokenEnumerable
 
@@ -127,10 +125,10 @@ Copyright and license under [GNU GPLv2 or later]
 
 ### ✨ Features Added
 
-- 🔢 Enumeration of reservations per token
-- 📇 Query reservations by renter or token
-- 📬 Efficient indexing using `EnumerableSet.Bytes32Set`
-- 🕒 Precise time interval conflict detection using interval trees
+* 🔢 Enumeration of reservations per token
+* 📇 Query reservations by renter or token
+* 📬 Efficient indexing using `EnumerableSet.Bytes32Set`
+* 🕒 Precise time interval conflict detection using interval trees
 
 ### 📦 Key Functions
 
@@ -190,19 +188,16 @@ function _size(Tree storage _calendar) internal view;
 
 ### 🧪 Libraries Used
 
-- `RivalIntervalTreeLibrary` — for managing overlapping time ranges
-- `EnumerableSet` from OpenZeppelin — for indexed access to reservation identifiers
+* `RivalIntervalTreeLibrary` — for managing overlapping time ranges
+* `EnumerableSet` from OpenZeppelin — for indexed access to reservation identifiers
 
 ### 🧠 Use Cases Enhanced
 
-- Lab booking systems with user dashboards
-- NFT-based rental markets needing calendar views
-- Event space or asset scheduling where users need to see all their upcoming reservations
+* Lab booking systems with user dashboards
+* NFT-based rental markets needing calendar views
+* Event space or asset scheduling where users need to see all their upcoming reservations
 
-
-
----
-
+***
 
 ## 📣 Events
 
@@ -225,19 +220,19 @@ event ReservationRequested(
 
 /// @notice Emitted when a reservation is successfully confirmed.
 /// @param reservationKey The unique identifier for the confirmed reservation.
-event ReservationConfirmed(bytes32 reservationKey);
+event ReservationConfirmed(bytes32 reservationKey, uint256 tokenId);
 
 /// @notice Emitted when a reservation request is denied.
 /// @param reservationKey The unique key identifying the reservation that was denied.
-event ReservationRequestDenied(bytes32 reservationKey);
+event ReservationRequestDenied(bytes32 reservationKey, uint256 tokenId);
 
 /// @notice Emitted when a reservation request is canceled.
 /// @param reservationKey The unique identifier of the reservation that was canceled.
-event ReservationRequestCanceled(bytes32 reservationKey);
+event ReservationRequestCanceled(bytes32 reservationKey, uint256 tokenId);
 
 /// @notice Emitted when a booking associated with a specific reservation key is canceled.
 /// @param reservationKey The unique identifier for the reservation that was canceled.
-event BookingCanceled(bytes32 reservationKey);
+event BookingCanceled(bytes32 reservationKey, uint256 tokenId);
 
 /// @notice Emitted when a token is listed for reservations.
 /// @param tokenId The ID of the token that was listed.
@@ -252,7 +247,6 @@ event LabUnlisted(uint256 indexed tokenId, address indexed owner);
 
 > ℹ️ These events are crucial for tracking reservation status transitions in decentralized booking systems, especially in UIs and indexing layers like The Graph.
 
-
 ## 💎 Compatibility: EIP-2535 Diamond Standard
 
 > This standard is designed to be fully compatible with [EIP-2535 Diamonds](https://eips.ethereum.org/EIPS/eip-2535), enabling modular deployment of facets that implement reservable functionality.
@@ -261,28 +255,27 @@ event LabUnlisted(uint256 indexed tokenId, address indexed owner);
 
 The reservable token logic can be deployed as a facet within a Diamond proxy system. This allows developers to:
 
-- Add, replace, or remove reservation logic without redeploying the entire contract
-- Share state using a central `AppStorage` struct pattern
-- Keep separation of concerns between reservation management, token core, and marketplace logic
+* Add, replace, or remove reservation logic without redeploying the entire contract
+* Share state using a central `AppStorage` struct pattern
+* Keep separation of concerns between reservation management, token core, and marketplace logic
 
 ### 📐 Recommended Setup
 
-- Use `ReservableToken` as the base facet with core reservation functionality
-- Extend with `ReservableTokenEnumerable` if enumeration or querying capabilities are needed
-- Share storage using `LibAppStorage` with the `DiamondStorage` pattern
-- Interact through `delegatecall` to preserve upgradeability and modular logic separation
+* Use `ReservableToken` as the base facet with core reservation functionality
+* Extend with `ReservableTokenEnumerable` if enumeration or querying capabilities are needed
+* Share storage using `LibAppStorage` with the `DiamondStorage` pattern
+* Interact through `delegatecall` to preserve upgradeability and modular logic separation
 
 ### 🔐 Access Control & Security
 
-- Ensure facets verify caller permissions (owner, renter) properly
-- Emit standard events for off-chain indexing and UI syncing
-- All state modifications are performed via Diamond-compatible storage layout
+* Ensure facets verify caller permissions (owner, renter) properly
+* Emit standard events for off-chain indexing and UI syncing
+* All state modifications are performed via Diamond-compatible storage layout
 
 ### 🧩 Benefits of Diamond Integration
 
-- Gas-efficient modular upgrades
-- Composability with other facet-based systems
-- Code separation between UI/logic/data layers
+* Gas-efficient modular upgrades
+* Composability with other facet-based systems
+* Code separation between UI/logic/data layers
 
 > 🛠️ Example: `DiamondCutFacet` manages upgrades, while `ReservableFacet` handles ERC-721 reservations using interval trees and enumerable sets.
-
