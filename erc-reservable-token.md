@@ -220,18 +220,22 @@ event ReservationRequested(
 
 /// @notice Emitted when a reservation is successfully confirmed.
 /// @param reservationKey The unique identifier for the confirmed reservation.
+/// @param tokenId The ID of the token associated with the reservation.
 event ReservationConfirmed(bytes32 reservationKey, uint256 tokenId);
 
 /// @notice Emitted when a reservation request is denied.
 /// @param reservationKey The unique key identifying the reservation that was denied.
+/// @param tokenId The ID of the token associated with the reservation.
 event ReservationRequestDenied(bytes32 reservationKey, uint256 tokenId);
 
 /// @notice Emitted when a reservation request is canceled.
 /// @param reservationKey The unique identifier of the reservation that was canceled.
+/// @param tokenId The ID of the token associated with the reservation.
 event ReservationRequestCanceled(bytes32 reservationKey, uint256 tokenId);
 
 /// @notice Emitted when a booking associated with a specific reservation key is canceled.
 /// @param reservationKey The unique identifier for the reservation that was canceled.
+/// @param tokenId The ID of the token associated with the reservation.
 event BookingCanceled(bytes32 reservationKey, uint256 tokenId);
 
 /// @notice Emitted when a token is listed for reservations.
