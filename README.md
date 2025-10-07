@@ -109,7 +109,6 @@ Since LabFacet extends OpenZeppelin’s [OpenZeppelin’s](https://github.com/Op
 * **cancelReservationRequest**: Allows a user to cancel a previously requested reservation and refunds the payment if necessary.
 * **cancelBooking**: Allows a user or the lab provider to cancel an existing confirmed booking.
 * **requestFunds**: Allows lab providers to claim funds from used or expired reservations.
-* **getAllReservations**: Retrieves all reservation records stored in the contract.
 * **getLabTokenAddress**: Returns the address of the $LAB token contract, set at ProviderFacet initialization.
 * **getSafeBalance**: Retrieves the total balance of $LAB funds held in the contract.
 
@@ -331,11 +330,10 @@ The following table lists the events emitted by the LabFacet.
 
 The functions listed below are queries that do not modify the state of the variables:
 
-| Function Name      | Definition                                                                   | Purpose                                                         | Return Type           |
-| ------------------ | ---------------------------------------------------------------------------- | --------------------------------------------------------------- | --------------------- |
-| getAllReservations | `function getAllReservations() external view returns (Reservation[] memory)` | Retrieves all reservations stored in the contract               | Reservation\[] memory |
-| getLabTokenAddress | `function getLabTokenAddress() external view returns (address)`              | Returns the address of the $LAB ERC20 token                     |                       |
-| getSafeBalance     | `function getSafeBalance() public view returns (uint256)`                    | Returns the current balance of Lab tokens held by this contract | uint256               |
+| Function Name      | Definition                                                      | Purpose                                                         | Return Type |
+| ------------------ | --------------------------------------------------------------- | --------------------------------------------------------------- | ----------- |
+| getLabTokenAddress | `function getLabTokenAddress() external view returns (address)` | Returns the address of the $LAB ERC20 token                     |             |
+| getSafeBalance     | `function getSafeBalance() public view returns (uint256)`       | Returns the current balance of Lab tokens held by this contract | uint256     |
 
 #### 📢 Events
 
